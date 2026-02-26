@@ -1,98 +1,103 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Image } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// 1. Datos de prueba (Luego vendrán de nuestro Backend en Go)
+const PISTAS_EJEMPLO = [
+  { id: '1', nombre: 'Pista Central', tipo: 'Cristal', precio: '20€/h', disponible: true },
+  { id: '2', nombre: 'Pista 2', tipo: 'Muro', precio: '15€/h', disponible: false },
+  { id: '3', nombre: 'Pista 3', tipo: 'Cristal', precio: '20€/h', disponible: true },
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // 2. Componente para cada tarjeta de pista
+  const renderItem = ({ item }: { item: typeof PISTAS_EJEMPLO[0] }) => (
+      <View style={styles.card}>
+        <View style={styles.cardInfo}>
+          <Text style={styles.courtName}>{item.nombre}</Text>
+          <Text style={styles.courtType}>{item.tipo} • {item.precio}</Text>
+        </View>
+
+        <TouchableOpacity
+            style={[styles.button, { backgroundColor: item.disponible ? '#2e7d32' : '#9e9e9e' }]}
+            disabled={!item.disponible}
+        >
+          <Text style={styles.buttonText}>
+            {item.disponible ? 'Reservar' : 'Ocupada'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+  );
+
+  return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>🎾 Padel Pro</Text>
+          <Text style={styles.subtitle}>Reserva tu próxima victoria</Text>
+        </View>
+
+        <FlatList
+            data={PISTAS_EJEMPLO}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.list}
+        />
+      </View>
   );
 }
 
+// 3. Estilos (Layout y Diseño)
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    padding: 40,
+    paddingBottom: 20,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1b5e20',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+  list: {
+    padding: 20,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    // Sombra para Android
+    elevation: 3,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  cardInfo: {
+    flex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  courtName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  courtType: {
+    color: '#777',
+    marginTop: 4,
+  },
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
