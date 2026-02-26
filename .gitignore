@@ -1,0 +1,21 @@
+# Binarios de Go
+backend/backend
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dependencias (se descargan con go mod download)
+vendor/
+
+# Docker
+.env
+
+# IDEs (JetBrains / VS Code)
+.idea/
+.vscode/
+*.swp
+
+# OS (Mac)
+.DS_Store
