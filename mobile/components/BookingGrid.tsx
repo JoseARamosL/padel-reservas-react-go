@@ -15,13 +15,22 @@ interface Slot {
 const BookingGrid: React.FC<Props> = ({ courtId }) => {
     const [slots, setSlots] = useState<Slot[]>([]);
     const today = new Date().toISOString().split('T')[0];
+    const apiBase = process.env.EXPO_PUBLIC_API_URL;
 
     useEffect(() => {
-        // Asegúrate de que API_URL esté definido aquí también
-        fetch(`TU_URL_API/api/reservations/availability?court_id=${courtId}&date=${today}`)
+        fetch(`${apiBase}/api/reservations/availability?court_id=${courtId}&date=${today}`)
             .then(res => res.json())
-            .then(data => setSlots(data))
-            .catch(err => console.error(err));
+            .then(data => {
+                // Si la API devuelve un objeto con la propiedad "error", no intentamos hacer map
+                if (data.error) {
+                    console.error("Error desde el servidor:", data.error);
+                    setSlots([]); // Dejamos el array vacío para que no explote
+                    Alert.alert("Error", "No se pudieron cargar los horarios.");
+                } else {
+                    setSlots(data);
+                }
+            })
+            .catch(err => console.error("Error de red:", err));
     }, [courtId]);
 
     return (

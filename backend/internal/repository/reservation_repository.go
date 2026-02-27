@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/JoseARamosL/padel-reservas/internal/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -36,10 +38,16 @@ func (r *ReservationRepository) GetSlotsAvailability(courtID int, date string) (
         SELECT s.id, s.time, 
                CASE WHEN r.id IS NULL THEN TRUE ELSE FALSE END as available
         FROM slots s
-        LEFT JOIN reservations r ON s.id = r.slot_id AND r.reservation_date = $1
-        WHERE s.court_id = $2;
+        LEFT JOIN reservations r ON s.id = r.slot_id 
+             AND r.reservation_date = $1 
+             AND r.court_id = $2
+        ORDER BY s.time;
     `
 
 	err := r.db.Select(&results, query, date, courtID)
+	if err != nil {
+		fmt.Println("ERROR EN SQL:", err)
+		return nil, err
+	}
 	return results, err
 }
