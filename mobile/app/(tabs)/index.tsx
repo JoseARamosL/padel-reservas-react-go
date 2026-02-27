@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Alert } from 'react-native';
 
 interface Pista {
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const API_URL = process.env.EXPO_PUBLIC_API_URL;
+  console.log("API_URL", API_URL);
   const router = useRouter();
 
   // Comprobamos el estado del login cada vez que la pantalla gana el foco
