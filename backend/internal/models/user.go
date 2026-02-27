@@ -1,10 +1,9 @@
 package models
 
 type User struct {
-	ID           int    `db:"id"`
-	Email        string `db:"email"`
-	PasswordHash string `db:"password_hash"`
-	Role         string `db:"role"`
-	Name         string `db:"name"`
-	Phone        string `db:"phone"`
+	ID           int    `json:"id" db:"id"`
+	Email        string `json:"email" db:"email"`
+	PasswordHash string `json:"-" db:"password_hash"` // El guion "-" es vital: evita que la contraseña viaje al JSON
+	Role         string `json:"role" db:"role"`
+	Name         string `json:"name" db:"name"`
 }

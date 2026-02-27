@@ -3,12 +3,13 @@ package models
 import "time"
 
 type Reservation struct {
-	ID         int       `db:"id"`
-	CourtID    int       `db:"court_id"`
-	UserID     *int      `db:"user_id"` // Usamos puntero porque puede ser NULL (invitado)
-	GuestName  string    `db:"guest_name"`
-	GuestPhone string    `db:"guest_phone"`
-	StartTime  time.Time `db:"start_time"`
-	EndTime    time.Time `db:"end_time"`
-	Status     string    `db:"status"`
+	ID              int       `json:"id" db:"id"`
+	SlotID          int       `json:"slot_id" db:"slot_id"`
+	CourtID         int       `json:"court_id" db:"court_id"`
+	ReservationDate string    `json:"reservation_date" db:"reservation_date"` // Usamos string para la fecha fácil
+	UserID          *int      `json:"user_id" db:"user_id"`
+	GuestName       string    `json:"guest_name" db:"guest_name"`
+	GuestPhone      string    `json:"guest_phone" db:"guest_phone"`
+	Status          string    `json:"status" db:"status"`
+	CreatedAt       time.Time `json:"created_at" db:"created_at"`
 }
