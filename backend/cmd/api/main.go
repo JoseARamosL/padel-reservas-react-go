@@ -76,6 +76,7 @@ func main() {
 	router.POST("/login", authHandler.Login)
 	router.GET("/reservations", reservationHandler.GetReservations)
 	router.GET("/api/reservations/availability", reservationHandler.GetAvailability)
+	router.POST("/register", authHandler.Register)
 
 	// 7. Levantar el servidor
 	log.Println("🚀 Servidor corriendo en http://localhost:8080")

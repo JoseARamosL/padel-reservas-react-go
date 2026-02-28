@@ -2,15 +2,15 @@ package handlers
 
 import (
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/JoseARamosL/padel-reservas/internal/models"
 	"github.com/JoseARamosL/padel-reservas/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var jwtKey = []byte("tu_secreto_muy_seguro") // En producción, esto debe ir en una variable de entorno
 
 type AuthHandler struct {
 	Repo *repository.UserRepository
@@ -32,26 +32,57 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	}
 
 	user, err := h.Repo.GetByEmail(credentials.Email)
-
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
 		return
 	}
 
-	// Comparamos la contraseña encriptada con la que envía el usuario
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(credentials.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Credenciales incorrectas"})
 		return
 	}
 
-	// Generamos el Token JWT
+	// Usamos una variable de entorno para el secreto
+	jwtKey := []byte(os.Getenv("JWT_SECRET"))
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": user.ID,
 		"role":    user.Role,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(), // El token caduca en 24h
+		"exp":     time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	tokenString, _ := token.SignedString(jwtKey)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+}
+
+func (h *AuthHandler) Register(c *gin.Context) {
+	var req models.RegisterRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar contraseña"})
+		return
+	}
+
+	user := models.User{
+		Email:        req.Email,
+		PasswordHash: string(hashedPassword),
+		Name:         &req.Name,
+		Surnames:     &req.Surnames,
+		Phone:        &req.Phone,
+		Role:         "user",
+	}
+
+	// CORRECCIÓN AQUÍ: usamos h.Repo (como definiste en la struct)
+	if err := h.Repo.Create(&user); err != nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "El email ya está registrado"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Usuario registrado con éxito"})
 }
