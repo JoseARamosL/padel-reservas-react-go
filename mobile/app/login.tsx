@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function LoginScreen() {
+const Login = () => {
+    const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const router = useRouter();
-    const API_URL = process.env.EXPO_PUBLIC_API_URL;
+    const apiBase = process.env.EXPO_PUBLIC_API_URL;
 
     const handleLogin = async () => {
         try {
-            const response = await fetch(`${API_URL}/login`, {
+            const response = await fetch(`${apiBase}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -20,46 +20,49 @@ export default function LoginScreen() {
             const data = await response.json();
 
             if (response.ok) {
-                // Aquí guardaremos el token (lo veremos en el siguiente paso)
-                Alert.alert("Éxito", "Login correcto");
-                await AsyncStorage.setItem('userToken', data.token); // <--- ESTO ES LA CLAVE
-                router.replace('/(tabs)');
+                // GUARDAMOS EL TOKEN
+                await AsyncStorage.setItem('userToken', data.token);
+                Alert.alert("¡Bienvenido!", "Has iniciado sesión correctamente");
+                router.replace('/'); // Volvemos al home
             } else {
                 Alert.alert("Error", data.error || "Credenciales incorrectas");
             }
-        } catch (error) {
+        } catch (err) {
             Alert.alert("Error", "No se pudo conectar con el servidor");
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Iniciar Sesión</Text>
+            <Text style={styles.title}>Iniciar sesión</Text>
             <TextInput
-                style={styles.input}
                 placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
+                style={styles.input}
+                keyboardType="email-address"
                 autoCapitalize="none"
+                placeholderTextColor="#757575"
+                onChangeText={setEmail}
             />
             <TextInput
-                style={styles.input}
                 placeholder="Contraseña"
-                value={password}
-                onChangeText={setPassword}
+                style={styles.input}
                 secureTextEntry
+                placeholderTextColor="#757575"
+                onChangeText={setPassword}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Entrar</Text>
+            <TouchableOpacity style={styles.btn} onPress={handleLogin}>
+                <Text style={styles.btnText}>Entrar</Text>
             </TouchableOpacity>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f5f5f5' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-    input: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, borderWidth: 1, borderColor: '#ddd' },
-    button: { backgroundColor: '#1b5e20', padding: 15, borderRadius: 10 },
-    buttonText: { color: '#fff', textAlign: 'center', fontWeight: 'bold' }
+    container: { flex: 1, padding: 20, justifyContent: 'center', backgroundColor: '#f9f9f9' },
+    title: { fontSize: 28, fontWeight: 'bold', color: '#1b5e20', marginBottom: 30, textAlign: 'center' },
+    input: { backgroundColor: '#fff', padding: 15, borderRadius: 12, borderWidth: 1, borderColor: '#ddd', marginBottom: 15 },
+    btn: { backgroundColor: '#1b5e20', padding: 18, borderRadius: 12, alignItems: 'center' },
+    btnText: { color: '#fff', fontWeight: 'bold' }
 });
+
+export default Login;
