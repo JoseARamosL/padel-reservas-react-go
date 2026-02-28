@@ -5,8 +5,7 @@ import "time"
 type Reservation struct {
 	ID              int       `json:"id" db:"id"`
 	SlotID          int       `json:"slot_id" db:"slot_id"`
-	CourtID         int       `json:"court_id" db:"court_id"`
-	ReservationDate string    `json:"reservation_date" db:"reservation_date"` // Usamos string para la fecha fácil
+	ReservationDate string    `json:"reservation_date" db:"reservation_date"`
 	UserID          *int      `json:"user_id" db:"user_id"`
 	GuestName       string    `json:"guest_name" db:"guest_name"`
 	GuestPhone      string    `json:"guest_phone" db:"guest_phone"`
