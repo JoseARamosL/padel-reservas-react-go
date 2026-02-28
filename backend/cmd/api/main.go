@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// 1. Configuración de conexión
-	connStr := "host=192.168.0.10 port=5432 user=user_padel password=password_padel dbname=padel_db sslmode=disable"
+	connStr := "host=localhost port=5432 user=user_padel password=password_padel dbname=padel_db sslmode=disable"
 
 	// 2. Conectar a la base de datos
 	db, err := sqlx.Connect("postgres", connStr)
