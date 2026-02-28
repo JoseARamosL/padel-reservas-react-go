@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Login = () => {
     const router = useRouter();
@@ -20,10 +21,9 @@ const Login = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // GUARDAMOS EL TOKEN
                 await AsyncStorage.setItem('userToken', data.token);
                 Alert.alert("¡Bienvenido!", "Has iniciado sesión correctamente");
-                router.replace('/'); // Volvemos al home
+                router.replace('/');
             } else {
                 Alert.alert("Error", data.error || "Credenciales incorrectas");
             }
@@ -33,36 +33,64 @@ const Login = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Iniciar sesión</Text>
-            <TextInput
-                placeholder="Email"
-                style={styles.input}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor="#757575"
-                onChangeText={setEmail}
-            />
-            <TextInput
-                placeholder="Contraseña"
-                style={styles.input}
-                secureTextEntry
-                placeholderTextColor="#757575"
-                onChangeText={setPassword}
-            />
-            <TouchableOpacity style={styles.btn} onPress={handleLogin}>
-                <Text style={styles.btnText}>Entrar</Text>
-            </TouchableOpacity>
-        </View>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.formCard}>
+                <Image source={require('../assets/images/padelodon.png')} style={styles.logo} />
+                <Text style={styles.title}>Iniciar Sesión</Text>
+
+                <TextInput
+                    placeholder="Email"
+                    style={styles.input}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholderTextColor="#888"
+                    onChangeText={setEmail}
+                />
+                <TextInput
+                    placeholder="Contraseña"
+                    style={styles.input}
+                    secureTextEntry
+                    placeholderTextColor="#888"
+                    onChangeText={setPassword}
+                />
+
+                <TouchableOpacity style={styles.btn} onPress={handleLogin}>
+                    <Text style={styles.btnText}>Entrar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => router.back()}>
+                    <Text style={styles.backText}>Volver</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, justifyContent: 'center', backgroundColor: '#f9f9f9' },
-    title: { fontSize: 28, fontWeight: 'bold', color: '#1b5e20', marginBottom: 30, textAlign: 'center' },
-    input: { backgroundColor: '#fff', padding: 15, borderRadius: 12, borderWidth: 1, borderColor: '#ddd', marginBottom: 15 },
-    btn: { backgroundColor: '#1b5e20', padding: 18, borderRadius: 12, alignItems: 'center' },
-    btnText: { color: '#fff', fontWeight: 'bold' }
+    container: { flex: 1, backgroundColor: '#f0f4f8', justifyContent: 'center', padding: 20 },
+    formCard: {
+        backgroundColor: '#fff',
+        padding: 30,
+        borderRadius: 25,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1
+    },
+    logo: { width: 100, height: 100, alignSelf: 'center', marginBottom: 20, resizeMode: 'contain' },
+    title: { fontSize: 24, fontWeight: '800', color: '#013247', marginBottom: 30, textAlign: 'center' },
+    input: {
+        backgroundColor: '#f9f9f9',
+        padding: 15,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        marginBottom: 15,
+        fontSize: 16
+    },
+    btn: { backgroundColor: '#013247', padding: 18, borderRadius: 15, alignItems: 'center', marginTop: 10 },
+    btnText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+    backText: { textAlign: 'center', marginTop: 20, color: '#00a8e8', fontWeight: '600' }
 });
 
 export default Login;
