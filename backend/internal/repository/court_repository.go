@@ -23,3 +23,15 @@ func (r *CourtRepository) GetAll() ([]models.Court, error) {
 	err := r.db.Select(&courts, query)
 	return courts, err
 }
+
+// GetByID obtiene una pista específica
+func (r *CourtRepository) GetByID(id int) (*models.Court, error) {
+	var court models.Court
+	query := "SELECT id, name, court_type, price_per_hour FROM courts WHERE id = $1"
+
+	err := r.db.Get(&court, query, id)
+	if err != nil {
+		return nil, err
+	}
+	return &court, nil
+}

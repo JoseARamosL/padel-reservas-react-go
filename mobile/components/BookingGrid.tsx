@@ -8,7 +8,8 @@ interface Props {
 
 interface Slot {
     id: number;
-    time: string;
+    start_time: string; // Cambiamos 'time' por 'start_time'
+    end_time: string;   // Añadimos 'end_time'
     available: boolean;
 }
 
@@ -40,11 +41,17 @@ const BookingGrid: React.FC<Props> = ({ courtId }) => {
                 {slots.map((slot) => (
                     <TouchableOpacity
                         key={slot.id}
-                        style={[styles.slotBtn, { backgroundColor: slot.available ? '#28a745' : '#dc3545' }]}
+                        style={[
+                            styles.slotBtn,
+                            { backgroundColor: slot.available ? '#28a745' : '#dc3545' }
+                        ]}
                         disabled={!slot.available}
-                        onPress={() => Alert.alert("Reservando", `Hora: ${slot.time}`)}
+                        // Mostramos el rango horario: 10:00 - 11:00
+                        onPress={() => Alert.alert("Reservando", `Hora: ${slot.start_time} - ${slot.end_time}`)}
                     >
-                        <Text style={styles.btnText}>{slot.time}</Text>
+                        <Text style={styles.btnText}>
+                            {slot.start_time} - {slot.end_time}
+                        </Text>
                     </TouchableOpacity>
                 ))}
             </View>
