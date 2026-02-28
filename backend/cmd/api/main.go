@@ -2,18 +2,39 @@ package main
 
 import (
 	"log"
+	"os"
+	"path/filepath"
+	"runtime"
 
 	"github.com/JoseARamosL/padel-reservas/internal/handlers"
 	"github.com/JoseARamosL/padel-reservas/internal/middleware"
 	"github.com/JoseARamosL/padel-reservas/internal/repository"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	// 1. Configuración de conexión
-	connStr := "host=192.168.0.10 port=5432 user=user_padel password=password_padel dbname=padel_db sslmode=disable"
+
+	// 1. Obtener la ruta del archivo actual (main.go)
+	_, filename, _, _ := runtime.Caller(0)
+	dir := filepath.Dir(filename) // Esto es /.../padel-reservas/backend/cmd/api/
+
+	// 2. Unir esa ruta con el nombre del archivo
+	envPath := filepath.Join(dir, ".env")
+
+	// 3. Cargar el archivo .env explícitamente
+	err := godotenv.Load(envPath)
+	if err != nil {
+		log.Fatalf("Error crítico: No se pudo cargar el archivo .env en %s", envPath)
+	}
+
+	// Leer la variable
+	connStr := os.Getenv("DB_URL")
+	if connStr == "" {
+		log.Fatal("La variable DB_URL no está definida en el .env")
+	}
 
 	// 2. Conectar a la base de datos
 	db, err := sqlx.Connect("postgres", connStr)

@@ -11,6 +11,7 @@ vendor/
 
 # Docker
 .env
+backend/cmd/api/.env
 
 # IDEs (JetBrains / VS Code)
 .idea/
