@@ -8,7 +8,34 @@ const Register = () => {
     const [form, setForm] = useState({ email: '', password: '', name: '', surnames: '', phone: '' });
     const apiBase = process.env.EXPO_PUBLIC_API_URL;
 
-    // Aquí mantienes tu lógica de handleRegister...
+    const handleRegister = async () => {
+        if (!form.email || !form.password || !form.name || !form.surnames || !form.phone) {
+            alert('Todos los campos son obligatorios');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${apiBase}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(form),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('Registro exitoso');
+                router.replace('/login');
+            } else {
+                alert(`Error en el registro: ${data.error || 'Inténtalo de nuevo'}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('No se pudo conectar con el servidor.');
+        }
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -24,7 +51,7 @@ const Register = () => {
                     <TextInput placeholder="Apellidos" style={styles.input} placeholderTextColor="#888" onChangeText={(t) => setForm({...form, surnames: t})} />
                     <TextInput placeholder="Teléfono" style={styles.input} placeholderTextColor="#888" keyboardType="phone-pad" onChangeText={(t) => setForm({...form, phone: t})} />
 
-                    <TouchableOpacity style={styles.btn} onPress={() => { /* tu handleRegister */ }}>
+                    <TouchableOpacity style={styles.btn} onPress={handleRegister}>
                         <Text style={styles.btnText}>Crear cuenta</Text>
                     </TouchableOpacity>
 
