@@ -53,7 +53,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	tokenString, _ := token.SignedString(jwtKey)
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user})
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {

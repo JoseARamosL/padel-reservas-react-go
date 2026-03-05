@@ -23,7 +23,7 @@ export default function HomeScreen() {
                 .catch(console.error);
         };
         load();
-    }, []));
+    }, [API_URL]));
 
     const handleLogout = async () => {
         await AsyncStorage.removeItem('userToken');

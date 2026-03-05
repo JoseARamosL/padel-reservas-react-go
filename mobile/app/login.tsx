@@ -22,6 +22,7 @@ const Login = () => {
 
             if (response.ok) {
                 await AsyncStorage.setItem('userToken', data.token);
+                await AsyncStorage.setItem('user', JSON.stringify(data.user));
                 Alert.alert("¡Bienvenido!", "Has iniciado sesión correctamente");
                 router.replace('/');
             } else {
